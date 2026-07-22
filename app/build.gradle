@@ -19,6 +19,9 @@ android {
         targetSdkVersion 32
         versionCode 14
         versionName "1.0.0"
+
+        // ЭТА СТРОЧКА ОБЯЗАТЕЛЬНА ДЛЯ ЗАПУСКА АВТОТЕСТОВ:
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -91,4 +94,12 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
+
+    // --- ДОБАВЛЕННЫЕ БИБЛИОТЕКИ ДЛЯ АВТОТЕСТОВ ---
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
