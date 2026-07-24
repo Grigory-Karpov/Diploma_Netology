@@ -20,8 +20,8 @@ android {
         versionCode 14
         versionName "1.0.0"
 
-        // ЭТА СТРОЧКА ОБЯЗАТЕЛЬНА ДЛЯ ЗАПУСКА АВТОТЕСТОВ:
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // ИЗМЕНЕНО ДЛЯ ALLURE (Специальный запускатор):
+        testInstrumentationRunner "io.qameta.allure.android.runners.AllureAndroidJUnitRunner"
     }
 
     compileOptions {
@@ -95,11 +95,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
-    // --- ДОБАВЛЕННЫЕ БИБЛИОТЕКИ ДЛЯ АВТОТЕСТОВ ---
+    // --- БИБЛИОТЕКИ ДЛЯ АВТОТЕСТОВ И ALLURE ---
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+
+    // Библиотеки Allure
+    androidTestImplementation 'io.qameta.allure:allure-kotlin-model:2.4.0'
+    androidTestImplementation 'io.qameta.allure:allure-kotlin-commons:2.4.0'
+    androidTestImplementation 'io.qameta.allure:allure-kotlin-junit4:2.4.0'
+    androidTestImplementation 'io.qameta.allure:allure-kotlin-android:2.4.0'
 }
