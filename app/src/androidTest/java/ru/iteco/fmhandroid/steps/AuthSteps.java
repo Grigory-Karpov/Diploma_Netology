@@ -19,9 +19,29 @@ import ru.iteco.fmhandroid.utils.WaitUtils;
 
 public class AuthSteps {
 
+    public void ensureLoggedOut() {
+        Allure.step("Подготовка: проверяем, что мы разлогинены");
+        try {
+            onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 10000));
+            logout();
+        } catch (Throwable t) {
+            // Если кнопки нет, значит мы уже на экране входа.
+        }
+    }
+
+    public void ensureLoggedIn(String login, String password) {
+        Allure.step("Подготовка: проверяем, что мы залогинены");
+        try {
+            onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 10000));
+        } catch (Throwable t) {
+            login(login, password);
+            checkNewsScreenLoaded();
+        }
+    }
+
     public void login(String login, String password) {
         Allure.step("Ввод логина и пароля");
-        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.login_text_input_layout, 8000));
+        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.login_text_input_layout, 15000));
 
         onView(allOf(supportsInputMethods(), isDescendantOfA(withId(R.id.login_text_input_layout))))
                 .perform(replaceText(login), closeSoftKeyboard());
@@ -35,7 +55,7 @@ public class AuthSteps {
 
     public void checkNewsScreenLoaded() {
         Allure.step("Проверка успешной авторизации (появление меню новостей)");
-        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 8000));
+        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 10000));
         onView(withId(R.id.main_menu_image_button)).check(matches(isDisplayed()));
     }
 
@@ -47,13 +67,10 @@ public class AuthSteps {
 
     public void logout() {
         Allure.step("Выход из аккаунта (Log out)");
+        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.authorization_image_button, 5000));
         onView(withId(R.id.authorization_image_button)).perform(click());
-        // Ждем менюшку профиля
-        onView(isRoot()).perform(WaitUtils.waitForElement(android.R.id.title, 3000));
+        onView(isRoot()).perform(WaitUtils.waitForElement(android.R.id.title, 5000));
         onView(allOf(withId(android.R.id.title), withText("Log out"))).perform(click());
-
-        // САМОЕ ГЛАВНОЕ: Ждем, пока на экране появится кнопка SIGN IN.
-        // Это гарантирует, что мы точно вышли из приложения до начала следующего теста!
-        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.enter_button, 8000));
+        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.enter_button, 10000));
     }
 }

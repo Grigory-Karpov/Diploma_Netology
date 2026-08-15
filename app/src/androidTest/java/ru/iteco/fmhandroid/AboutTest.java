@@ -32,22 +32,20 @@ public class AboutTest {
     public void setUp() {
         authSteps = new AuthSteps();
         aboutSteps = new AboutSteps();
+        try { Thread.sleep(3000); } catch (InterruptedException e) { e.printStackTrace(); } // ждем splash screen
+
+        // Преподаватель просил вынести авторизацию в @Before!
+        // Если мы уже залогинены с прошлого теста - робот не будет тратить время.
+        authSteps.ensureLoggedIn("login2", "password2");
     }
 
     @Test
     @Story("Открытие экрана About")
     @Description("Проверка перехода на экран About и отображения информации о версии")
     public void testOpenAboutScreen() {
-        // 1. Авторизуемся, так как меню доступно только после входа
-        authSteps.login("login2", "password2");
-        authSteps.checkNewsScreenLoaded();
-
-        // 2. Идем в About и проверяем его
+        // Теперь тут только логика самого About, как и должно быть у профи!
         aboutSteps.openAboutScreen();
         aboutSteps.checkAboutScreenLoaded();
-
-        // 3. УБИРАЕМ ЗА СОБОЙ (чтобы не сломать другие тесты при массовом запуске)
         aboutSteps.goBack();
-        authSteps.logout();
     }
 }

@@ -3,7 +3,6 @@ package ru.iteco.fmhandroid;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,31 +19,29 @@ import ru.iteco.fmhandroid.ui.AppActivity;
 @Feature("Авторизация")
 public class AuthTest {
 
-    AuthSteps authSteps;
-
     @Rule
     public ActivityScenarioRule<AppActivity> activityRule =
             new ActivityScenarioRule<>(AppActivity.class);
 
-    @Before
-    public void setUp() {
-        authSteps = new AuthSteps();
-        // Умное ожидание загрузки зашито прямо внутрь authSteps, больше никаких sleep()!
-    }
-
+    // Этот тест запускается, логинится, проверяет и ВЫХОДИТ. Он чистит за собой.
     @Test
     @Story("Успешный вход в систему и выход")
-    @Description("Проверка входа с валидным логином и паролем, с последующим выходом")
     public void testSuccessfulLoginAndLogout() {
+        AuthSteps authSteps = new AuthSteps();
+        try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
+
         authSteps.login("login2", "password2");
         authSteps.checkNewsScreenLoaded();
         authSteps.logout();
     }
 
+    // Этот тест запускается на ЧИСТОМ приложении (т.к. прошлый вышел), делает проверку и всё.
     @Test
     @Story("Неуспешный вход в систему (неверный пароль)")
-    @Description("Проверка появления ошибки при вводе невалидного пароля")
     public void testInvalidPassword() {
+        AuthSteps authSteps = new AuthSteps();
+        try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
+
         authSteps.login("login2", "wrong_password");
         authSteps.checkErrorToastIsDisplayed();
     }

@@ -21,7 +21,6 @@ public class AboutSteps {
         onView(withId(R.id.main_menu_image_button)).perform(click());
 
         Allure.step("Выбор раздела About в меню");
-        // Ждем 1.5 сек пока выедет боковое меню, и сразу кликаем по тексту (без поиска системных ID)
         try { Thread.sleep(1500); } catch (InterruptedException e) { e.printStackTrace(); }
         onView(withText("About")).perform(click());
     }
@@ -35,7 +34,6 @@ public class AboutSteps {
     public void goBack() {
         Allure.step("Возврат на предыдущий экран (системная кнопка Назад)");
         pressBack();
-        // Ждем возврата на главную
         onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 5000));
     }
 }
