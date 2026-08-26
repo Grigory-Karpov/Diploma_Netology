@@ -14,25 +14,23 @@ import ru.iteco.fmhandroid.R;
 import ru.iteco.fmhandroid.utils.WaitUtils;
 
 public class AboutSteps {
-
     public void openAboutScreen() {
         Allure.step("Нажатие на кнопку главного меню (бургер)");
         onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 5000));
         onView(withId(R.id.main_menu_image_button)).perform(click());
-
         Allure.step("Выбор раздела About в меню");
-        try { Thread.sleep(1500); } catch (InterruptedException e) { e.printStackTrace(); }
+        try { Thread.sleep(1500); } catch (InterruptedException e) {} // Ждем анимацию меню
         onView(withText("About")).perform(click());
     }
 
     public void checkAboutScreenLoaded() {
-        Allure.step("Проверка загрузки экрана About (наличие надписи Version)");
+        Allure.step("Проверка загрузки экрана About");
         onView(isRoot()).perform(WaitUtils.waitForElement(R.id.about_version_title_text_view, 7000));
         onView(withId(R.id.about_version_title_text_view)).check(matches(isDisplayed()));
     }
 
     public void goBack() {
-        Allure.step("Возврат на предыдущий экран (системная кнопка Назад)");
+        Allure.step("Возврат на предыдущий экран");
         pressBack();
         onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 5000));
     }

@@ -3,6 +3,7 @@ package ru.iteco.fmhandroid;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,30 +20,63 @@ import ru.iteco.fmhandroid.ui.AppActivity;
 @Feature("Авторизация")
 public class AuthTest {
 
+    AuthSteps authSteps = new AuthSteps();
+
     @Rule
     public ActivityScenarioRule<AppActivity> activityRule =
             new ActivityScenarioRule<>(AppActivity.class);
 
-    // Этот тест запускается, логинится, проверяет и ВЫХОДИТ. Он чистит за собой.
-    @Test
-    @Story("Успешный вход в систему и выход")
-    public void testSuccessfulLoginAndLogout() {
-        AuthSteps authSteps = new AuthSteps();
-        try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
-
-        authSteps.login("login2", "password2");
-        authSteps.checkNewsScreenLoaded();
-        authSteps.logout();
+    @Before
+    public void setUp() {
+        authSteps.ensureLoggedOut();
     }
 
-    // Этот тест запускается на ЧИСТОМ приложении (т.к. прошлый вышел), делает проверку и всё.
     @Test
-    @Story("Неуспешный вход в систему (неверный пароль)")
-    public void testInvalidPassword() {
-        AuthSteps authSteps = new AuthSteps();
-        try { Thread.sleep(5000); } catch (InterruptedException e) { e.printStackTrace(); }
+    @Story("Тест 1: Успешный вход в систему")
+    public void testSuccessfulLogin() {
+        authSteps.login("login2", "password2");
+        authSteps.checkNewsScreenLoaded();
+    }
 
-        authSteps.login("login2", "wrong_password");
-        authSteps.checkErrorToastIsDisplayed();
+    @Test
+    @Story("Тест 2: Пустой логин и пароль")
+    public void testEmptyFields() {
+        authSteps.login("", "");
+        authSteps.checkToast("Логин и пароль не могут быть пустыми", "Login and password cannot be empty");
+    }
+
+    @Test
+    @Story("Тест 3: Пустой пароль")
+    public void testEmptyPassword() {
+        authSteps.login("login2", "");
+        authSteps.checkToast("Логин и пароль не могут быть пустыми", "Login and password cannot be empty");
+    }
+
+    @Test
+    @Story("Тест 4: Пустой логин")
+    public void testEmptyLogin() {
+        authSteps.login("", "password2");
+        authSteps.checkToast("Логин и пароль не могут быть пустыми", "Login and password cannot be empty");
+    }
+
+    @Test
+    @Story("Тест 5: Неверный пароль")
+    public void testInvalidPassword() {
+        authSteps.login("login2", "123456");
+        authSteps.checkToast("Неверный логин или пароль", "Wrong login or password");
+    }
+
+    @Test
+    @Story("Тест 6: Неверный логин")
+    public void testInvalidLogin() {
+        authSteps.login("user999", "password2");
+        authSteps.checkToast("Неверный логин или пароль", "Wrong login or password");
+    }
+
+    @Test
+    @Story("Тест 7: Логин со спецсимволами")
+    public void testLoginWithSpecialChars() {
+        authSteps.login("@#$%", "password2");
+        authSteps.checkToast("Неверный логин или пароль", "Wrong login or password");
     }
 }

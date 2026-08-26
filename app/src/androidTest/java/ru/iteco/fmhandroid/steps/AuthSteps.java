@@ -12,9 +12,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.supportsInputMethods;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 
 import io.qameta.allure.kotlin.Allure;
 import ru.iteco.fmhandroid.R;
+import ru.iteco.fmhandroid.utils.ToastMatcher;
 import ru.iteco.fmhandroid.utils.WaitUtils;
 
 public class AuthSteps {
@@ -22,26 +24,24 @@ public class AuthSteps {
     public void ensureLoggedOut() {
         Allure.step("Подготовка: проверяем, что мы разлогинены");
         try {
-            onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 10000));
+            onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 5000));
             logout();
-        } catch (Throwable t) {
-            // Если кнопки нет, значит мы уже на экране входа.
-        }
+        } catch (Exception e) {}
     }
 
     public void ensureLoggedIn(String login, String password) {
         Allure.step("Подготовка: проверяем, что мы залогинены");
         try {
-            onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 10000));
-        } catch (Throwable t) {
+            onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 5000));
+        } catch (Exception e) {
             login(login, password);
             checkNewsScreenLoaded();
         }
     }
 
     public void login(String login, String password) {
-        Allure.step("Ввод логина и пароля");
-        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.login_text_input_layout, 15000));
+        Allure.step("Ввод логина: " + login + " и пароля: " + password);
+        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.login_text_input_layout, 10000));
 
         onView(allOf(supportsInputMethods(), isDescendantOfA(withId(R.id.login_text_input_layout))))
                 .perform(replaceText(login), closeSoftKeyboard());
@@ -59,10 +59,26 @@ public class AuthSteps {
         onView(withId(R.id.main_menu_image_button)).check(matches(isDisplayed()));
     }
 
-    public void checkErrorToastIsDisplayed() {
-        Allure.step("Проверка появления ошибки (кнопка входа остается на экране)");
-        onView(isRoot()).perform(WaitUtils.waitForElement(R.id.enter_button, 5000));
-        onView(withId(R.id.enter_button)).check(matches(isDisplayed()));
+    // КРУТОЙ МЕТОД: Умный ловец Тостов на двух языках с динамическим ожиданием
+    public void checkToast(String textRu, String textEn) {
+        Allure.step("Проверка появления всплывающего сообщения об ошибке");
+        long startTime = System.currentTimeMillis();
+        long endTime = startTime + 5000;
+        boolean found = false;
+        while (System.currentTimeMillis() < endTime) {
+            try {
+                onView(anyOf(withText(textRu), withText(textEn)))
+                        .inRoot(new ToastMatcher())
+                        .check(matches(isDisplayed()));
+                found = true;
+                break;
+            } catch (Exception | AssertionError e) {
+                try { Thread.sleep(200); } catch (InterruptedException ignored) {}
+            }
+        }
+        if (!found) {
+            throw new AssertionError("Всплывающее окно с текстом ошибки не найдено!");
+        }
     }
 
     public void logout() {

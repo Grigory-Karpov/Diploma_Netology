@@ -12,7 +12,6 @@ import ru.iteco.fmhandroid.R;
 import ru.iteco.fmhandroid.utils.WaitUtils;
 
 public class QuotesSteps {
-
     public void openQuotesScreen() {
         Allure.step("Переход в раздел 'Тематические цитаты' (нажатие на бабочку)");
         onView(isRoot()).perform(WaitUtils.waitForElement(R.id.our_mission_image_button, 5000));
@@ -20,7 +19,7 @@ public class QuotesSteps {
     }
 
     public void checkQuotesScreenLoaded() {
-        Allure.step("Проверка загрузки экрана цитат (наличие заголовка Our Mission)");
+        Allure.step("Проверка загрузки экрана цитат (наличие заголовка)");
         onView(isRoot()).perform(WaitUtils.waitForElement(R.id.our_mission_title_text_view, 5000));
         onView(withId(R.id.our_mission_title_text_view)).check(matches(isDisplayed()));
     }

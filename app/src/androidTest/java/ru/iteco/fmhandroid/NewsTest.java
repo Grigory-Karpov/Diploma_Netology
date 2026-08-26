@@ -21,8 +21,8 @@ import ru.iteco.fmhandroid.ui.AppActivity;
 @Feature("Раздел Новости (Управление)")
 public class NewsTest {
 
-    AuthSteps authSteps;
-    NewsSteps newsSteps;
+    AuthSteps authSteps = new AuthSteps();
+    NewsSteps newsSteps = new NewsSteps();
 
     @Rule
     public ActivityScenarioRule<AppActivity> activityRule =
@@ -30,19 +30,56 @@ public class NewsTest {
 
     @Before
     public void setUp() {
-        authSteps = new AuthSteps();
-        newsSteps = new NewsSteps();
-
-        // Умная проверка сама дождется окончания загрузки и войдет, если надо!
+        try { Thread.sleep(8000); } catch (InterruptedException e) {}
         authSteps.ensureLoggedIn("login2", "password2");
+        newsSteps.openControlPanel(); // Все тесты новостей начинаются в Control Panel
     }
 
     @Test
-    @Story("Негативный сценарий создания новости")
-    @Description("Проверка попытки создания новости с пустыми полями (ожидается ошибка, форма не закрывается)")
+    @Story("Тест 1: Переход в Control Panel")
+    public void testOpenControlPanel() {
+        newsSteps.checkControlPanelLoaded();
+    }
+
+    @Test
+    @Story("Тест 2: Негативный сценарий создания новости")
     public void testCreateNewsWithEmptyFields() {
-        newsSteps.openControlPanel();
         newsSteps.clickAddNews();
         newsSteps.clickSaveAndCheckError();
+    }
+
+    @Test
+    @Story("Тест 3: Отмена создания новости")
+    public void testCancelNewsCreation() {
+        newsSteps.clickAddNews();
+        newsSteps.clickCancelAndConfirm();
+        newsSteps.checkControlPanelLoaded();
+    }
+
+    @Test
+    @Story("Тест 4: Открытие фильтра новостей")
+    public void testOpenFilter() {
+        newsSteps.openFilter();
+    }
+
+    @Test
+    @Story("Тест 5: Отмена фильтрации новостей")
+    public void testCancelFilter() {
+        newsSteps.openFilter();
+        newsSteps.cancelFilter();
+        newsSteps.checkControlPanelLoaded();
+    }
+
+    @Test
+    @Story("Тест 6: Открытие формы создания новости")
+    public void testOpenCreateNewsForm() {
+        newsSteps.clickAddNews();
+    }
+
+    @Test
+    @Story("Тест 7: Возврат в Control Panel из создания")
+    public void testReturnToControlPanelFromCreation() {
+        newsSteps.clickAddNews();
+        newsSteps.clickCancelAndConfirm();
     }
 }

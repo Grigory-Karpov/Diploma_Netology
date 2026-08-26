@@ -11,14 +11,12 @@ import org.hamcrest.Matcher;
 import java.util.concurrent.TimeoutException;
 
 public class WaitUtils {
-    // Этот метод заставляет тест ждать появления элемента (viewId) максимум millis миллисекунд
     public static ViewAction waitForElement(final int viewId, final long millis) {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() { return ViewMatchers.isRoot(); }
             @Override
             public String getDescription() { return "Ожидание элемента " + viewId + " в течение " + millis + " мс"; }
-
             @Override
             public void perform(final UiController uiController, final View view) {
                 uiController.loopMainThreadUntilIdle();
