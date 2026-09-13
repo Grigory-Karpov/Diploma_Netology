@@ -14,12 +14,14 @@ import ru.iteco.fmhandroid.R;
 import ru.iteco.fmhandroid.utils.WaitUtils;
 
 public class AboutSteps {
+
     public void openAboutScreen() {
         Allure.step("Нажатие на кнопку главного меню (бургер)");
         onView(isRoot()).perform(WaitUtils.waitForElement(R.id.main_menu_image_button, 5000));
         onView(withId(R.id.main_menu_image_button)).perform(click());
+
         Allure.step("Выбор раздела About в меню");
-        try { Thread.sleep(1500); } catch (InterruptedException e) {} // Ждем анимацию меню
+        onView(isRoot()).perform(WaitUtils.waitForElement(android.R.id.title, 3000));
         onView(withText("About")).perform(click());
     }
 
