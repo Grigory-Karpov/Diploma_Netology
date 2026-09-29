@@ -1,18 +1,19 @@
 package ru.iteco.fmhandroid;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import io.qameta.allure.android.runners.AllureAndroidJUnit4;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import io.qameta.allure.android.runners.AllureAndroidJUnit4;
 import io.qameta.allure.kotlin.Epic;
 import io.qameta.allure.kotlin.Feature;
 import io.qameta.allure.kotlin.Story;
 import ru.iteco.fmhandroid.steps.AboutSteps;
 import ru.iteco.fmhandroid.steps.AuthSteps;
 import ru.iteco.fmhandroid.ui.AppActivity;
+import ru.iteco.fmhandroid.utils.TestData;
 
 @RunWith(AllureAndroidJUnit4.class)
 @Epic("Тестирование UI")
@@ -28,7 +29,8 @@ public class AboutTest {
 
     @Before
     public void setUp() {
-        authSteps.ensureLoggedIn("login2", "password2");
+        // Убран слип, используется TestData
+        authSteps.ensureLoggedIn(TestData.VALID_LOGIN, TestData.VALID_PASSWORD);
     }
 
     @Test

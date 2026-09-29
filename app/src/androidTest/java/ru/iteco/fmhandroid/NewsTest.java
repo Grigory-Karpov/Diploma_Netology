@@ -1,18 +1,19 @@
 package ru.iteco.fmhandroid;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import io.qameta.allure.android.runners.AllureAndroidJUnit4;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import io.qameta.allure.android.runners.AllureAndroidJUnit4;
 import io.qameta.allure.kotlin.Epic;
 import io.qameta.allure.kotlin.Feature;
 import io.qameta.allure.kotlin.Story;
 import ru.iteco.fmhandroid.steps.AuthSteps;
 import ru.iteco.fmhandroid.steps.NewsSteps;
 import ru.iteco.fmhandroid.ui.AppActivity;
+import ru.iteco.fmhandroid.utils.TestData;
 
 @RunWith(AllureAndroidJUnit4.class)
 @Epic("Тестирование UI приложения Мобильный Хоспис")
@@ -28,7 +29,8 @@ public class NewsTest {
 
     @Before
     public void setUp() {
-        authSteps.ensureLoggedIn("login2", "password2");
+        // Убран слип, добавлена авторизация через TestData
+        authSteps.ensureLoggedIn(TestData.VALID_LOGIN, TestData.VALID_PASSWORD);
         newsSteps.openControlPanel(); // Все тесты новостей начинаются в Control Panel
     }
 
@@ -80,31 +82,45 @@ public class NewsTest {
         newsSteps.clickCancelAndConfirm();
     }
 
+    // НОВЫЕ ТЕСТЫ ПО ЗАМЕЧАНИЯМ ПРЕПОДАВАТЕЛЯ
+
     @Test
     @Story("Тест 8: Позитивный сценарий создания новости")
-    public void testCreateNewsPositive() {
-        String testTitle = "Дипломная новость Создание";
-        String testDesc = "Описание позитивного теста создания";
+    public void testCreateNewsSuccess() {
+        // Генерируем уникальный заголовок, чтобы он не сливался со старыми
+        String uniqueTitle = "Тестовая новость " + System.currentTimeMillis();
 
         newsSteps.clickAddNews();
-        newsSteps.fillAndSaveNews("Объявление", testTitle, testDesc);
-        newsSteps.checkControlPanelLoaded(); // Ждем возврата в контрольную панель
-        newsSteps.checkNewsWithTitleExists(testTitle);
+        newsSteps.fillNewsForm("Объявление", uniqueTitle, "Успешное создание новости");
+        newsSteps.clickSaveButton();
+
+        // Проверяем, что заголовок появился в списке
+        newsSteps.checkNewsWithTitleExists(uniqueTitle);
     }
 
     @Test
-    @Story("Тест 9: Позитивный сценарий редактирования новости")
-    public void testEditNewsPositive() {
-        String originalTitle = "Новость для редактирования";
-        String originalDesc = "Старое описание";
-        String updatedDesc = "Обновленное описание после редактирования";
+    @Story("Тест 9: Позитивный сценарий редактирования новости с проверкой (ассертом)")
+    public void testEditNewsSuccess() {
+        String originalTitle = "Создано для теста ред. " + System.currentTimeMillis();
+        String editedTitle = "Отредактировано " + System.currentTimeMillis();
+        String editedDescription = "Это новое описание после изменения";
 
+        // 1. Создаем новость-донор
         newsSteps.clickAddNews();
-        newsSteps.fillAndSaveNews("Зарплата", originalTitle, originalDesc);
-        newsSteps.checkControlPanelLoaded();
+        newsSteps.fillNewsForm("Праздник", originalTitle, "Старое описание");
+        newsSteps.clickSaveButton();
 
-        newsSteps.clickEditCreatedNews(originalTitle);
-        newsSteps.editNewsDescriptionAndSave(updatedDesc);
-        newsSteps.checkControlPanelLoaded();
+        // 2. Находим её в списке, скроллим к ней и нажимаем карандаш
+        newsSteps.clickEditExistingNews(originalTitle);
+
+        // 3. Заполняем форму новыми данными
+        newsSteps.fillNewsForm("Праздник", editedTitle, editedDescription);
+        newsSteps.clickSaveButton();
+
+        // 4. ПРОВЕРКА 1: Убеждаемся, что новость с новым заголовком видна
+        newsSteps.checkNewsWithTitleExists(editedTitle);
+
+        // 5. ПРОВЕРКА 2: Разворачиваем её и проверяем, что описание сохранилось!
+        newsSteps.openNewsAndCheckDescription(editedTitle, editedDescription);
     }
 }
